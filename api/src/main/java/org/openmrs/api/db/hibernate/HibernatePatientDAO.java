@@ -263,6 +263,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (patientIdentifierTypes.size() > 0)
 			criteria.add(Expression.in("identifierType", patientIdentifierTypes));
 		
+		if (locations.size() > 0)
+			criteria.add(Expression.in("location", locations));
+		
 		// TODO add junit test for getting by patients
 		if (patients.size() > 0)
 			criteria.add(Expression.in("patient", patients));
@@ -298,11 +301,10 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @should not return null excluding retired
-	 * @should not return retired
-	 * @should not return null including retired
-	 * @should return all
-	 * @should return ordered
+	 * @should not return null when includeRetired is false
+	 * @should not return retired when includeRetired is false
+	 * @should not return null when includeRetired is true
+	 * @should return all when includeRetired is true
 	 * @see org.openmrs.api.db.PatientDAO#getAllPatientIdentifierTypes(boolean)
 	 */
 	@SuppressWarnings("unchecked")

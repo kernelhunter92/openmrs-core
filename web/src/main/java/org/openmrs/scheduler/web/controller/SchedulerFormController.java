@@ -118,6 +118,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @should reschedule a currently scheduled task
 	 * @should not reschedule a task that is not currently scheduled
 	 * @should not reschedule a task if the start time has passed
+	 * @should not reschedule an executing task
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
@@ -183,20 +184,22 @@ public class SchedulerFormController extends SimpleFormController {
 		TaskDefinition task = (TaskDefinition) command;
 		
 		Long interval = task.getRepeatInterval();
-		
-		if (interval == null || interval < 60)
+		Long repeatInterval;
+		if (interval == null || interval < 60) {
 			map.put("units", "seconds");
-		else if (interval < 3600) {
+			repeatInterval = interval;
+		} else if (interval < 3600) {
 			map.put("units", "minutes");
-			task.setRepeatInterval(interval / 60);
+			repeatInterval = interval / 60;
 		} else if (interval < 86400) {
 			map.put("units", "hours");
-			task.setRepeatInterval(interval / 3600);
+			repeatInterval = interval / 3600;
 		} else {
 			map.put("units", "days");
-			task.setRepeatInterval(interval / 86400);
+			repeatInterval = interval / 86400;
 		}
 		
+		map.put("repeatInterval", repeatInterval.toString());
 		return map;
 	}
 	
